@@ -1,7 +1,7 @@
 logs:
     dir_logs: logs/vizwiz/
 annotations:
-    dir: ../data_vizwiz/Annotations
+    dir: ./data_vizwiz/Annotations
     top_ans: 3000
     max_length: 26
     min_count_word: 0

@@ -8,7 +8,7 @@ from pprint import pprint
 
 import yaml
 
-from preprocessing.preprocessing_utils import prepare_questions, prepare_answers
+from preprocessing_utils import prepare_questions, prepare_answers
 
 
 def create_question_vocab(questions, min_count=0):
@@ -59,9 +59,10 @@ def main():
 
     # vocabs are created based on train (trainval) split only
     train_path = os.path.join(dir_path, config['training']['train_split'] + '.json')
-    with open(train_path, 'r') as fd:
+    print(train_path)
+    with open(train_path, 'r',encoding='utf-8') as fd:
         train_ann = json.load(fd)
-
+        print("jere")
     questions = prepare_questions(train_ann)
 
     question_vocab = create_question_vocab(questions, config['annotations']['min_count_word'])
