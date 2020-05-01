@@ -16,7 +16,7 @@ images:
     path_features: ./prepro_data/resnet14x14.h5
 model:
 # Could be added new architectures and hyper-parameters like activations etc
-    pretrained_model:  #./logs/... # leave empty if no pretrained model is available
+    pretrained_model:  ./logs/vizwiz/best_accuracy_log.pth # leave empty if no pretrained model is available
     seq2vec:
         dropout: 0.25
         emb_size: 300

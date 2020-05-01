@@ -41,13 +41,13 @@ class VQADataset(data.Dataset):
     def __init__(self, config, split):
         super(VQADataset, self).__init__()
 
-        with open(config['annotations']['path_vocabs'], 'r') as fd:
+        with open(config['annotations']['path_vocabs'], 'r', encoding='utf-8') as fd:
             vocabs = json.load(fd)
 
         annotations_dir = config['annotations']['dir']
 
         path_ann = os.path.join(annotations_dir, split + ".json")
-        with open(path_ann, 'r') as fd:
+        with open(path_ann, 'r', encoding='utf-8') as fd:
             self.annotations = json.load(fd)
 
         self.max_question_length = config['annotations']['max_length']
@@ -74,6 +74,7 @@ class VQADataset(data.Dataset):
         # load image names in feature extraction order
         with h5py.File(config['images']['path_features'], 'r') as f:
             img_names = f['img_name'][()]
+        
         self.name_to_id = {name: i for i, name in enumerate(img_names)}
 
         # names in the annotations, will be used to get items from the dataset

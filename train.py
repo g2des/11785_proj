@@ -29,10 +29,10 @@ def train(model, loader, optimizer, tracker, epoch, split):
         a = item['answer']
         q_length = item['q_length']
 
-        v = Variable(v.cuda(async=True))
-        q = Variable(q.cuda(async=True))
-        a = Variable(a.cuda(async=True))
-        q_length = Variable(q_length.cuda(async=True))
+        v = Variable(v.cuda(non_blocking=True))
+        q = Variable(q.cuda(non_blocking=True))
+        a = Variable(a.cuda(non_blocking=True))
+        q_length = Variable(q_length.cuda(non_blocking=True))
 
         out = model(v, q, q_length)
 
@@ -74,10 +74,10 @@ def evaluate(model, loader, tracker, epoch, split):
             sample_id = item['sample_id']
             q_length = item['q_length']
 
-            v = Variable(v.cuda(async=True))
-            q = Variable(q.cuda(async=True))
-            a = Variable(a.cuda(async=True))
-            q_length = Variable(q_length.cuda(async=True))
+            v = Variable(v.cuda(non_blocking=True))
+            q = Variable(q.cuda(non_blocking=True))
+            a = Variable(a.cuda(non_blocking=True))
+            q_length = Variable(q_length.cuda(non_blocking=True))
 
             out = model(v, q, q_length)
 
@@ -128,7 +128,7 @@ def main():
             config = yaml.load(handle)
 
     # generate log directory
-    dir_name = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    dir_name = "test" # datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     path_log_dir = os.path.join(config['logs']['dir_logs'], dir_name)
 
     if not os.path.exists(path_log_dir):
@@ -164,37 +164,37 @@ def main():
 
     for i in range(config['training']['epochs']):
 
-        train(model, train_loader, optimizer, tracker, epoch=i, split=config['training']['train_split'])
+        # train(model, train_loader, optimizer, tracker, epoch=i, split=config['training']['train_split'])
         # If we are training on the train split (and not on train+val) we can evaluate on val
         if config['training']['train_split'] == 'train':
             eval_results = evaluate(model, val_loader, tracker, epoch=i, split='val')
 
             # save all the information in the log file
-            log_data = {
-                'epoch': i,
-                'tracker': tracker.to_dict(),
-                'config': config,
-                'weights': model.state_dict(),
-                'eval_results': eval_results,
-                'vocabs': train_loader.dataset.vocabs,
-            }
+            # log_data = {
+            #     'epoch': i,
+            #     'tracker': tracker.to_dict(),
+            #     'config': config,
+            #     'weights': model.state_dict(),
+            #     'eval_results': eval_results,
+            #     'vocabs': train_loader.dataset.vocabs,
+            # }
 
             # save logs for min validation loss and max validation accuracy
-            if eval_results['avg_loss'] < min_loss:
-                torch.save(log_data, path_best_loss)  # save model
-                min_loss = eval_results['avg_loss']  # update min loss value
+    #         if eval_results['avg_loss'] < min_loss:
+    #             torch.save(log_data, path_best_loss)  # save model
+    #             min_loss = eval_results['avg_loss']  # update min loss value
 
-            if eval_results['avg_accuracy'] > max_accuracy:
-                torch.save(log_data, path_best_accuracy)  # save model
-                max_accuracy = eval_results['avg_accuracy']  # update max accuracy value
+    #         if eval_results['avg_accuracy'] > max_accuracy:
+    #             torch.save(log_data, path_best_accuracy)  # save model
+    #             max_accuracy = eval_results['avg_accuracy']  # update max accuracy value
 
-    # Save final model
-    log_data = {
-        'tracker': tracker.to_dict(),
-        'config': config,
-        'weights': model.state_dict(),
-        'vocabs': train_loader.dataset.vocabs,
-    }
+    # # Save final model
+    # log_data = {
+    #     'tracker': tracker.to_dict(),
+    #     'config': config,
+    #     'weights': model.state_dict(),
+    #     'vocabs': train_loader.dataset.vocabs,
+    # }
 
     path_final_log = os.path.join(path_log_dir, 'final_log.pth')
     torch.save(log_data, path_final_log)
